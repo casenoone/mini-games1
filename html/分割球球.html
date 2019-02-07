@@ -1,0 +1,361 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>分割球球</title>
+</head>
+    <script src="../js/pixi.min.js" ></script>
+<style>* {padding: 0; margin: 0}</style>
+
+<body>
+  <script type="text/javascript">
+
+var upState = false;
+
+var upStates = false;
+
+//Create a Pixi Application
+let app = new PIXI.Application({width: 580, height: 580});
+
+//Add the canvas that Pixi automatically created for you to the HTML document
+document.body.appendChild(app.view);
+
+var circle = new Array();
+
+var controlLine = new Array();
+
+var constLine = new Array();
+
+var fixedLine = new Array();
+
+var Test_cx = new Array();
+
+var Test_cy = new Array();
+
+
+controlLine[0] = new PIXI.Graphics();
+controlLine[0].lineStyle(4, 0xFFFFFF, 1);
+controlLine[0].moveTo(0, 600);
+controlLine[0].lineTo(0, window.innerHeight);
+controlLine[0].x = 100;
+controlLine[0].y = 0;
+app.stage.addChild(controlLine[0]);
+
+
+controlLine[1] = new PIXI.Graphics();
+controlLine[1].lineStyle(4, 0xFFFFFF, 1);
+controlLine[1].moveTo(0, 0);
+controlLine[1].lineTo(15, 0);
+controlLine[1].x = 0;
+controlLine[1].y = 0;
+app.stage.addChild(controlLine[1]);
+
+
+for(var i = 0;i<10;i++){
+
+createCircle();
+
+}
+
+ 
+screenLine(constLine);
+
+var x1 = 0;
+
+var x2 = 0;
+
+function render(){
+
+
+
+controlLine[0].x = x1;
+controlLine[0].y = 0;
+
+controlLine[1].x = 0;
+controlLine[1].y = x2;
+
+for(var i = 0;i<circle.length;i++)
+{
+  circle[i].x += circle[i].cx;
+  circle[i].y += circle[i].cy;
+  
+
+ 
+
+ for(var k = 0;k<fixedLine.length;k++){
+
+      if(Contact(fixedLine[k],circle[i])){
+
+       if(fixedLine[k].state == 0){
+       
+            circle[i].cy = -circle[i].cy;;
+
+        }
+
+        else{
+
+            circle[i].cx = -circle[i].cx;;
+
+        }
+
+        }
+
+  }
+
+
+   for(var j = 0;j<constLine.length;j++){
+
+      if(Contact(constLine[j],circle[i])){
+
+       if(constLine[j].state == 0){
+       
+            circle[i].cy = -circle[i].cy;;
+
+        }
+
+        else{
+
+            circle[i].cx = -circle[i].cx;;
+
+        }
+
+        }
+
+  }
+
+
+
+
+}
+requestAnimationFrame(render);
+
+}
+
+render();
+
+app.renderer.view.style.position = "absolute";
+app.renderer.view.style.display = "block";
+app.renderer.autoResize = true;
+app.renderer.resize(window.innerWidth, window.innerHeight);
+
+function createCircle(){
+
+   var length = circle.length;
+    
+   circle[length] = new PIXI.Graphics();
+
+
+   var radius = Math.random()*20+5;
+   circle[length].beginFill(0x9966FF*Math.random());
+   circle[length].drawCircle(0, 0, radius);
+   circle[length].endFill();
+   circle[length].x = Math.random()*500+50;
+   circle[length].y = Math.random()*500+50;
+   circle[length].r = radius;
+   circle[length].cx = Math.random()*6+2;
+   circle[length].cy = Math.random()*6+2;
+   app.stage.addChild(circle[length]);
+
+
+}
+
+function screenLine(constLine){
+   for(var i = 0;i<4;i++){
+    constLine[i] = new Object();
+   }
+   constLine[0].Ax = 0;
+   constLine[0].Ay = window.innerHeight;
+   constLine[0].Bx = window.innerWidth;
+   constLine[0].By = window.innerHeight;
+   constLine[0].state = 0;//0代表水平 
+
+   constLine[1].Ax = 0;
+   constLine[1].Ay = 0;
+   constLine[1].Bx = window.innerWidth;
+   constLine[1].By = 0;
+   constLine[1].state = 0;//0代表水平 
+
+
+   constLine[2].Ax = 0;
+   constLine[2].Ay = 0;
+   constLine[2].Bx = 0;
+   constLine[2].By = window.innerHeight;
+   constLine[2].state = 1;//0代表水平 
+
+   constLine[3].Ax = window.innerWidth;
+   constLine[3].Ay = 0;
+   constLine[3].Bx = window.innerWidth;
+   constLine[3].By = window.innerHeight;
+   constLine[3].state = 1;//0代表水平 
+
+
+
+}
+
+function Contact(line,circle){
+  
+  
+    var product = Math.abs((circle.x-line.Ax)*(line.Ay-line.By) - (circle.y-line.Ay)*(line.Ax-line.Bx));
+
+    var dis = product/Math.sqrt((line.Ax-line.Bx)*(line.Ax-line.Bx) + (line.Ay-line.By)*(line.Ay-line.By));
+
+    if(dis<=circle.r){
+       return true;
+
+    }
+
+    if(dis<0){
+
+      //alert("Game Over");
+
+    }
+
+
+
+   /* if(dis<circle.r){
+
+      alert("Game Over");
+
+    }*/
+  
+return false;
+}
+
+
+
+document.onmousedown=function (ev){
+
+   var Event=ev||event; //IE浏览器直接使用event或者window.event得到事件本身。     
+   
+   //alert(Event.clientX/screen.width);
+
+   if(Event.button == 0){
+
+     leftDown = true;
+     
+
+   }
+
+   if(Event.button == 2){
+
+     rightDown = true;
+     
+
+   }
+
+
+
+}
+
+document.onmouseup = function(ev){
+rightDown = false;
+leftDown = false;
+
+    var Event=ev||event;
+
+if(Event.button == 0)
+{
+if(upState == true)
+{
+  
+  if(upStates == true)
+  {
+    var temp1 = fixedLine.length;
+fixedLine[temp1] = new PIXI.Graphics();
+fixedLine[temp1].lineStyle(1, 0xFFFF00, 1);
+fixedLine[temp1].moveTo(x1, 0);
+fixedLine[temp1].lineTo(x1, window.innerHeight);
+fixedLine[temp1].x = 0;
+fixedLine[temp1].y = 0;
+
+fixedLine[temp1].Ax = x1;
+
+fixedLine[temp1].Ay = 0;
+
+fixedLine[temp1].Bx = x1;
+
+fixedLine[temp1].By = window.innerHeight;
+
+fixedLine[temp1].state = 1;
+
+app.stage.addChild(fixedLine[temp1]);
+}
+}
+
+
+upState = true;
+
+
+}
+
+if(Event.button == 2){
+
+var temp1 = fixedLine.length;
+fixedLine[temp1] = new PIXI.Graphics();
+fixedLine[temp1].lineStyle(1, 0xFFFF00, 1);
+fixedLine[temp1].moveTo(0, x2);
+fixedLine[temp1].lineTo(window.innerWidth, x2);
+fixedLine[temp1].x = 0;
+fixedLine[temp1].y = 0;
+
+fixedLine[temp1].Ax = 0;
+
+fixedLine[temp1].Ay = x2;
+
+fixedLine[temp1].Bx = window.innerWidth;
+
+fixedLine[temp1].By = x2;
+
+fixedLine[temp1].state = 0;
+
+app.stage.addChild(fixedLine[temp1]);
+
+
+
+}
+
+
+
+
+}
+
+
+document.onmousemove = function(ev){
+
+   var Event=ev||event;
+     
+
+   if(rightDown){
+ 
+       x2 = Event.clientY;
+        
+   }
+
+   if(leftDown){
+
+           x1 = Event.clientX;
+
+          if(upState == true){
+
+             upStates =true;
+
+          }  
+
+
+
+
+   }
+
+
+}
+
+document.oncontextmenu = function(){//禁止鼠标右键弹出菜单
+    return false;
+    }
+
+
+   
+  </script>
+</body>
+</html>
