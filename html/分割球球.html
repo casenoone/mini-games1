@@ -3,16 +3,17 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>分割球</title>
+  <title>分割球球</title>
 </head>
-    <script src="https://raw.githack.com/casenoone/a-game-about-sphere/master/js/pixi.min.js" ></script>
+    <script src="../js/pixi.min.js" ></script>
 <style>* {padding: 0; margin: 0}</style>
 
 <body>
   <script type="text/javascript">
-var upState = false;
+var lll = 0;
+var gameState = 0;
 
-var upStates = false;
+var pressMove = false;
 
 //Create a Pixi Application
 let app = new PIXI.Application({width: 580, height: 580});
@@ -26,12 +27,11 @@ var controlLine = new Array();
 
 var constLine = new Array();
 
-var fixedLine = new Array();
+var fixedLine_X = new Array();
 
-var Test_cx = new Array();
+var fixedLine_Y = new Array();
 
-var Test_cy = new Array();
-
+var circlrNum = 0;
 
 controlLine[0] = new PIXI.Graphics();
 controlLine[0].lineStyle(4, 0xFFFFFF, 1);
@@ -51,22 +51,91 @@ controlLine[1].y = 0;
 app.stage.addChild(controlLine[1]);
 
 
-for(var i = 0;i<10;i++){
+if(sessionStorage.getItem("number"))
+
+     {
+
+        circlrNum = sessionStorage.getItem("number") //
+
+     }
+
+else{
+
+      sessionStorage.setItem("number",2)
+
+}
+
+
+if(sessionStorage.getItem("gameState"))
+
+     {
+
+        gameState = sessionStorage.getItem("gameState")
+
+     }
+
+else{
+
+      sessionStorage.setItem("gameState",0);
+
+}
+
+circlrNum = sessionStorage.getItem("number")
+
+gameState = sessionStorage.getItem("gameState")
+
+
+for(var i = 0;i<circlrNum;i++){
 
 createCircle();
 
 }
 
- 
-screenLine(constLine);
+
+for(var i = 0;i<2;i++){
+    
+    fixedLine_X[i] = new Object();
+   
+   }
+
+for(var i = 0;i<2;i++){
+    
+    fixedLine_Y[i] = new Object();
+   
+   }
+
+   fixedLine_X[0].Ax = 0;
+   fixedLine_X[0].Ay = window.innerHeight;
+   fixedLine_X[0].Bx = window.innerWidth;
+   fixedLine_X[0].By = window.innerHeight;
+   fixedLine_X[0].state = 0;//0代表水平 
+
+   fixedLine_X[1].Ax = 0;
+   fixedLine_X[1].Ay = 0;
+   fixedLine_X[1].Bx = window.innerWidth;
+   fixedLine_X[1].By = 0;
+   fixedLine_X[1].state = 0;//0代表水平 
+
+
+   fixedLine_Y[0].Ax = 0;
+   fixedLine_Y[0].Ay = 0;
+   fixedLine_Y[0].Bx = 0;
+   fixedLine_Y[0].By = window.innerHeight;
+   fixedLine_Y[0].state = 1;//0代表水平 
+
+   fixedLine_Y[1].Ax = window.innerWidth;
+   fixedLine_Y[1].Ay = 0;
+   fixedLine_Y[1].Bx = window.innerWidth;
+   fixedLine_Y[1].By = window.innerHeight;
+   fixedLine_Y[1].state = 1;//0代表水平 
+
+
 
 var x1 = 0;
 
 var x2 = 0;
 
 function render(){
-
-
 
 controlLine[0].x = x1;
 controlLine[0].y = 0;
@@ -80,53 +149,36 @@ for(var i = 0;i<circle.length;i++)
   circle[i].y += circle[i].cy;
   
 
- 
+ for(var k = 0;k<fixedLine_X.length;k++){
 
- for(var k = 0;k<fixedLine.length;k++){
-
-      if(Contact(fixedLine[k],circle[i])){
-
-       if(fixedLine[k].state == 0){
+      if(Contact(fixedLine_X[k],circle[i])){
        
-            circle[i].cy = -circle[i].cy;;
-
-        }
-
-        else{
-
-            circle[i].cx = -circle[i].cx;;
-
-        }
+            circle[i].cy = -circle[i].cy;
 
         }
 
   }
 
+  for(var k = 0;k<fixedLine_Y.length;k++){
 
-   for(var j = 0;j<constLine.length;j++){
-
-      if(Contact(constLine[j],circle[i])){
-
-       if(constLine[j].state == 0){
+      if(Contact(fixedLine_Y[k],circle[i])){
        
-            circle[i].cy = -circle[i].cy;;
-
-        }
-
-        else{
-
-            circle[i].cx = -circle[i].cx;;
-
-        }
+            circle[i].cx = -circle[i].cx;
 
         }
 
   }
-
-
 
 
 }
+
+Sort_X(fixedLine_X);
+Sort_Y(fixedLine_Y);
+
+calculatePoint(fixedLine_X,fixedLine_Y,circle);
+
+
+
 requestAnimationFrame(render);
 
 }
@@ -145,7 +197,7 @@ function createCircle(){
    circle[length] = new PIXI.Graphics();
 
 
-   var radius = Math.random()*20+5;
+   var radius = 16;//Math.random()*20+15;
    circle[length].beginFill(0x9966FF*Math.random());
    circle[length].drawCircle(0, 0, radius);
    circle[length].endFill();
@@ -154,42 +206,42 @@ function createCircle(){
    circle[length].r = radius;
    circle[length].cx = Math.random()*6+2;
    circle[length].cy = Math.random()*6+2;
+   circle[length].gameState = false;
    app.stage.addChild(circle[length]);
 
 
 }
 
-function screenLine(constLine){
-   for(var i = 0;i<4;i++){
-    constLine[i] = new Object();
-   }
-   constLine[0].Ax = 0;
-   constLine[0].Ay = window.innerHeight;
-   constLine[0].Bx = window.innerWidth;
-   constLine[0].By = window.innerHeight;
-   constLine[0].state = 0;//0代表水平 
+function Sort_X(arr){
 
-   constLine[1].Ax = 0;
-   constLine[1].Ay = 0;
-   constLine[1].Bx = window.innerWidth;
-   constLine[1].By = 0;
-   constLine[1].state = 0;//0代表水平 
+    var len = arr.length;
+    for (var i = 0; i < len - 1; i++) {
+        for (var j = 0; j < len - 1 - i; j++) {
+            if (arr[j].Ay > arr[j+1].Ay) {        // 相邻元素两两对比
+                var temp = arr[j+1];        // 元素交换
+                arr[j+1] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+    
 
-
-   constLine[2].Ax = 0;
-   constLine[2].Ay = 0;
-   constLine[2].Bx = 0;
-   constLine[2].By = window.innerHeight;
-   constLine[2].state = 1;//0代表水平 
-
-   constLine[3].Ax = window.innerWidth;
-   constLine[3].Ay = 0;
-   constLine[3].Bx = window.innerWidth;
-   constLine[3].By = window.innerHeight;
-   constLine[3].state = 1;//0代表水平 
+}
 
 
+function Sort_Y(arr){
 
+    var len = arr.length;
+    for (var i = 0; i < len - 1; i++) {
+        for (var j = 0; j < len - 1 - i; j++) {
+            if (arr[j].Ax > arr[j+1].Ax) {        // 相邻元素两两对比
+                var temp = arr[j+1];        // 元素交换
+                arr[j+1] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+    
 }
 
 function Contact(line,circle){
@@ -199,36 +251,226 @@ function Contact(line,circle){
 
     var dis = product/Math.sqrt((line.Ax-line.Bx)*(line.Ax-line.Bx) + (line.Ay-line.By)*(line.Ay-line.By));
 
-    if(dis<=circle.r){
+    if(dis<=circle.r+Math.sqrt(circle.cx*circle.cx+circle.cy*circle.cy)&&dis>=circle.r){
        return true;
 
     }
 
-    if(dis<0){
+    if(dis<circle.r-0.5*Math.sqrt(circle.cx*circle.cx+circle.cy*circle.cy)){
 
-      //alert("Game Over");
+      alert("游戏结束，请重新开始！");
+      
+
+      sessionStorage.setItem("gameState",1) //存储名字为name值为caibin的变量*/
+
+      //window.history.go(0);
+      document.location.reload();//当前页面 
 
     }
 
-
-
-   /* if(dis<circle.r){
-
-      alert("Game Over");
-
-    }*/
   
 return false;
 }
 
+
+function calculatePoint(fixedLine_X,fixedLine_Y,circle){
+
+    var pointData = new Array();         //先声明一维 
+       
+       var length_x = fixedLine_X.length;
+       
+       var length_y = fixedLine_Y.length;
+   
+       for(var i=0;i<length_x;i++){          //一维长度为
+          pointData[i]=new Array(i);    //再声明二维 
+          for(var j=0;j<length_y;j++){      //二维长度为
+             pointData[i][j]=new Object(); 
+             pointData[i][j].x = 0;
+             pointData[i][j].y = 0;
+       } 
+} 
+
+   for(var i = 0;i<length_x;i++){
+
+       for(var j = 0;j<length_y;j++){
+
+          pointData[i][j].x = fixedLine_X[i].Ay;
+          pointData[i][j].y = fixedLine_Y[j].Ax;
+
+       }
+
+   }
+
+
+   var judgeArea = new Array();
+
+   
+   for(var i = 0;i<length_x-1;i++){
+
+       for(var j = 0;j<length_y-1;j++){
+
+          var len = judgeArea.length;
+   
+          judgeArea[len] = new Object();
+
+          judgeArea[len].Max_x = pointData[i+1][j+1].x;
+
+          judgeArea[len].Max_y = pointData[i+1][j+1].y;
+
+          judgeArea[len].Min_x = pointData[i][j].x;
+
+          judgeArea[len].Min_y = pointData[i][j].y;
+
+          judgeArea[len].state = false;
+
+
+       }
+
+   }
+
+   var length = circle.length;
+
+   var len = judgeArea.length;
+
+   var kk = 0;
+
+   for(var i = 0;i<length;i++){
+
+         for(var j = 0;j<len;j++){
+
+            if(judgeArea[j].state == false){
+
+                if(circle[i].x>=judgeArea[j].Min_y&&circle[i].x<=judgeArea[j].Max_y&&circle[i].y>=judgeArea[j].Min_x&&circle[i].y<=judgeArea[j].Max_x)
+
+                {
+               
+                    judgeArea[j].state = true;
+
+                    circle[i].gameState = true;
+
+                    kk++;
+
+
+                }
+
+            }
+
+         }
+
+   }
+
+    var count = 0;
+
+   for(var i = 0;i<length;i++){
+
+     if(circle[i].gameState == true){
+
+         count++;
+
+     }
+
+   }
+
+   if(count == length&&sessionStorage.getItem("gameState")==0){
+
+     alert("胜利！")
+
+     circlrNum++;
+
+     sessionStorage.setItem("number",circlrNum) //存储名字为name值为caibin的变量*/
+
+     window.history.go(0);
+
+
+   }
+
+      sessionStorage.setItem("gameState",0) //存储名字为name值为caibin的变量*/
+
+    for(var i = 0;i<length;i++){
+
+        circle[i].gameState = false;
+
+   }
+  
+
+
+
+document.onkeydown=function(event){
+              var e = event //|| //window.event ;//|| arguments.callee.caller.arguments[0];
+             
+
+              if(e.keyCode==65){ // 按 A 
+                alert(judgeArea[0].Min_x)
+               alert(judgeArea[1].Min_x)
+                //alert(vMatrix[2]+','+vMatrix[])
+               }
+              if(e && e.keyCode==68){ // 按 D 
+                alert(judgeArea[0].Min_y)
+                alert(judgeArea[1].Min_y)
+                  
+                 }            
+              if(e && e.keyCode==87){ // W
+                alert(judgeArea[0].Max_x)
+                  alert(judgeArea[1].Max_x)
+             }
+               if(e && e.keyCode==83){ // S
+                alert(judgeArea[0].Max_y)
+                alert(judgeArea[1].Max_y)
+             }
+
+            
+             
+         }; 
+
+
+
+
+
+}
+
+
+function disLine_y(x,array){
+
+   var length = array.length;
+
+   for(var i = 0;i<length;i++){
+
+       if(Math.abs(x-array[i].Ax)<10){
+
+             return false;
+
+       }
+
+   }
+
+   return true;
+
+}
+
+
+function disLine_x(x,array){
+
+   var length = array.length;
+
+   for(var i = 0;i<length;i++){
+
+       if(Math.abs(x-array[i].Ay)<10){
+
+             return false;
+
+       }
+
+   }
+
+   return true;
+
+}    
 
 
 document.onmousedown=function (ev){
 
    var Event=ev||event; //IE浏览器直接使用event或者window.event得到事件本身。     
    
-   //alert(Event.clientX/screen.width);
-
    if(Event.button == 0){
 
      leftDown = true;
@@ -253,67 +495,69 @@ leftDown = false;
 
     var Event=ev||event;
 
+
 if(Event.button == 0)
 {
-if(upState == true)
-{
-  
-  if(upStates == true)
-  {
-    var temp1 = fixedLine.length;
-fixedLine[temp1] = new PIXI.Graphics();
-fixedLine[temp1].lineStyle(1, 0xFFFF00, 1);
-fixedLine[temp1].moveTo(x1, 0);
-fixedLine[temp1].lineTo(x1, window.innerHeight);
-fixedLine[temp1].x = 0;
-fixedLine[temp1].y = 0;
 
-fixedLine[temp1].Ax = x1;
+if(pressMove == true){
+if(disLine_y(x1,fixedLine_Y)){
 
-fixedLine[temp1].Ay = 0;
+var temp1 = fixedLine_Y.length;
+fixedLine_Y[temp1] = new PIXI.Graphics();
+fixedLine_Y[temp1].lineStyle(2, 0xFFFF00, 1);
+fixedLine_Y[temp1].moveTo(x1, 0);
+fixedLine_Y[temp1].lineTo(x1, window.innerHeight);
+fixedLine_Y[temp1].x = 0;
+fixedLine_Y[temp1].y = 0;
 
-fixedLine[temp1].Bx = x1;
+fixedLine_Y[temp1].Ax = x1;
 
-fixedLine[temp1].By = window.innerHeight;
+fixedLine_Y[temp1].Ay = 0;
 
-fixedLine[temp1].state = 1;
+fixedLine_Y[temp1].Bx = x1;
 
-app.stage.addChild(fixedLine[temp1]);
-}
-}
+fixedLine_Y[temp1].By = window.innerHeight;
 
+fixedLine_Y[temp1].state = 1;
 
-upState = true;
-
+app.stage.addChild(fixedLine_Y[temp1]);
 
 }
 
+}
+pressMove = false;
+
+}
 if(Event.button == 2){
+if(pressMove == true){
+if(disLine_x(x2,fixedLine_X)){
 
-var temp1 = fixedLine.length;
-fixedLine[temp1] = new PIXI.Graphics();
-fixedLine[temp1].lineStyle(1, 0xFFFF00, 1);
-fixedLine[temp1].moveTo(0, x2);
-fixedLine[temp1].lineTo(window.innerWidth, x2);
-fixedLine[temp1].x = 0;
-fixedLine[temp1].y = 0;
+var temp1 = fixedLine_X.length;
+fixedLine_X[temp1] = new PIXI.Graphics();
+fixedLine_X[temp1].lineStyle(2, 0xFFFF00, 1);
+fixedLine_X[temp1].moveTo(0, x2);
+fixedLine_X[temp1].lineTo(window.innerWidth, x2);
+fixedLine_X[temp1].x = 0;
+fixedLine_X[temp1].y = 0;
 
-fixedLine[temp1].Ax = 0;
+fixedLine_X[temp1].Ax = 0;
 
-fixedLine[temp1].Ay = x2;
+fixedLine_X[temp1].Ay = x2;
 
-fixedLine[temp1].Bx = window.innerWidth;
+fixedLine_X[temp1].Bx = window.innerWidth;
 
-fixedLine[temp1].By = x2;
+fixedLine_X[temp1].By = x2;
 
-fixedLine[temp1].state = 0;
+fixedLine_X[temp1].state = 0;
 
-app.stage.addChild(fixedLine[temp1]);
-
-
+app.stage.addChild(fixedLine_X[temp1]);
 
 }
 
+pressMove = false;
+
+}
+}
 
 
 
@@ -328,12 +572,16 @@ document.onmousemove = function(ev){
    if(rightDown){
  
        x2 = Event.clientY;
+
+       pressMove = true;
         
    }
 
    if(leftDown){
 
            x1 = Event.clientX;
+
+           pressMove = true;
 
           if(upState == true){
 
@@ -352,7 +600,6 @@ document.onmousemove = function(ev){
 document.oncontextmenu = function(){//禁止鼠标右键弹出菜单
     return false;
     }
-
 
 
    
