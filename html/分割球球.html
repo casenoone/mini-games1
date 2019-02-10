@@ -603,18 +603,16 @@ var touchstartX = "";
 window.ontouchstart = function(event) {
     
 
-    //touchstartX = event.changedTouches[0].screenX;//得到手指按下点的Y轴
+    touchstartX = event.changedTouches[0].screenX;//得到手指按下点的X轴
     
-    //leftDown = true;
-
-}
+    touchstartY = event.changedTouches[0].screenY;//
 
 
 var touchmoveX = "";
 window.ontouchmove = function(event) {
-   x1 = event.changedTouches[0].screenX+500;
+   x1 = event.changedTouches[0].screenX+touchstartX;
 
-   x2 = event.changedTouches[0].screenY+300;
+   x2 = event.changedTouches[0].screenY+touchstartY;
 }
 
 
