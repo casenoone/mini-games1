@@ -596,6 +596,28 @@ document.onmousemove = function(ev){
 
 
 }
+    
+    
+   var touchstartX = "";
+window.ontouchstart = function(event) {
+    
+    alert(touchstartX)
+
+
+    //touchstartX = event.changedTouches[0].screenX;//得到手指按下点的Y轴
+    
+    //leftDown = true;
+
+}
+
+
+var touchmoveY = "";
+window.ontouchmove = function(event) {
+    touchmoveY = event.changedTouches[0].screenY;
+   alert("yifon")
+  
+}
+ 
 
 document.oncontextmenu = function(){//禁止鼠标右键弹出菜单
     return false;
