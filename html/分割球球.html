@@ -611,7 +611,7 @@ window.ontouchstart = function(event) {
 
 var touchmoveX = "";
 window.ontouchmove = function(event) {
-   x1 = event.changedTouches[0].screenX+touchstartX;
+   x1 = event.changedTouches[0].clientX;
 
    x2 = event.originalEvent.targetTouches[0].pageY;
 }
