@@ -612,9 +612,9 @@ window.ontouchstart = function(event) {
 
 var touchmoveX = "";
 window.ontouchmove = function(event) {
-   x1 = event.changedTouches[0].screenX;
+   x1 = event.changedTouches[0].screenX+100;
 
-  
+   x2 = event.changedTouches[0].screenY+100;
 }
 
 
@@ -642,6 +642,31 @@ fixedLine_Y[temp1].By = window.innerHeight;
 fixedLine_Y[temp1].state = 1;
 
 app.stage.addChild(fixedLine_Y[temp1]);
+
+}
+
+
+if(disLine_x(x2,fixedLine_X)){
+
+var temp1 = fixedLine_X.length;
+fixedLine_X[temp1] = new PIXI.Graphics();
+fixedLine_X[temp1].lineStyle(2, 0xFFFF00, 1);
+fixedLine_X[temp1].moveTo(0, x2);
+fixedLine_X[temp1].lineTo(window.innerWidth, x2);
+fixedLine_X[temp1].x = 0;
+fixedLine_X[temp1].y = 0;
+
+fixedLine_X[temp1].Ax = 0;
+
+fixedLine_X[temp1].Ay = x2;
+
+fixedLine_X[temp1].Bx = window.innerWidth;
+
+fixedLine_X[temp1].By = x2;
+
+fixedLine_X[temp1].state = 0;
+
+app.stage.addChild(fixedLine_X[temp1]);
 
 }
 
