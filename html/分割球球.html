@@ -596,13 +596,12 @@ document.onmousemove = function(ev){
 
 
 }
-    
-    
-   var touchstartX = "";
+
+
+
+var touchstartX = "";
 window.ontouchstart = function(event) {
     
-    alert(touchstartX)
-
 
     //touchstartX = event.changedTouches[0].screenX;//得到手指按下点的Y轴
     
@@ -611,13 +610,44 @@ window.ontouchstart = function(event) {
 }
 
 
-var touchmoveY = "";
+var touchmoveX = "";
 window.ontouchmove = function(event) {
-    touchmoveY = event.changedTouches[0].screenY;
-   alert("yifon")
+   x1 = event.changedTouches[0].screenX;
+
   
 }
- 
+
+
+var touchendX = "";
+window.ontouchend = function(event) {
+    //touchendY = event.changedTouches[0].screenY;//监听释放点的位置
+if(disLine_y(x1,fixedLine_Y)){
+
+var temp1 = fixedLine_Y.length;
+fixedLine_Y[temp1] = new PIXI.Graphics();
+fixedLine_Y[temp1].lineStyle(2, 0xFFFF00, 1);
+fixedLine_Y[temp1].moveTo(x1, 0);
+fixedLine_Y[temp1].lineTo(x1, window.innerHeight);
+fixedLine_Y[temp1].x = 0;
+fixedLine_Y[temp1].y = 0;
+
+fixedLine_Y[temp1].Ax = x1;
+
+fixedLine_Y[temp1].Ay = 0;
+
+fixedLine_Y[temp1].Bx = x1;
+
+fixedLine_Y[temp1].By = window.innerHeight;
+
+fixedLine_Y[temp1].state = 1;
+
+app.stage.addChild(fixedLine_Y[temp1]);
+
+}
+
+}
+    
+
 
 document.oncontextmenu = function(){//禁止鼠标右键弹出菜单
     return false;
