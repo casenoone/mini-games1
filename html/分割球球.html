@@ -613,7 +613,7 @@ var touchmoveX = "";
 window.ontouchmove = function(event) {
    x1 = event.changedTouches[0].screenX+touchstartX;
 
-   x2 = event.changedTouches[0].screenY;
+   x2 = event.originalEvent.targetTouches[0].pageY;
 }
 
 
