@@ -16,7 +16,7 @@
   <script type="text/javascript">
 var time = 0;
 var gameState = 0;
-
+var status = 0;
 var pressMove = false;
 
 //Create a Pixi Application
@@ -35,7 +35,7 @@ var fixedLine_X = new Array();
 
 var fixedLine_Y = new Array();
 
-var circlrNum = 0;
+var circlrNum = 2;
 
 controlLine[0] = new PIXI.Graphics();
 controlLine[0].lineStyle(4, 0xFFFFFF, 1);
@@ -44,7 +44,7 @@ controlLine[0].lineTo(0, 30);
 controlLine[0].x = 100;
 controlLine[0].y = 0;
 app.stage.addChild(controlLine[0]);
-
+//app.stage.removeChild(controlLine[0]);
 
 controlLine[1] = new PIXI.Graphics();
 controlLine[1].lineStyle(4, 0xFFFFFF, 1);
@@ -55,19 +55,6 @@ controlLine[1].y = 0;
 app.stage.addChild(controlLine[1]);
 
 
-if(sessionStorage.getItem("number"))
-
-     {
-
-        circlrNum = sessionStorage.getItem("number") //
-
-     }
-
-else{
-
-      sessionStorage.setItem("number",2)
-
-}
 
 
 if(sessionStorage.getItem("gameState"))
@@ -84,7 +71,6 @@ else{
 
 }
 
-circlrNum = sessionStorage.getItem("number")
 
 gameState = sessionStorage.getItem("gameState")
 
@@ -180,9 +166,14 @@ Sort_X(fixedLine_X);
 Sort_Y(fixedLine_Y);
 
 calculatePoint(fixedLine_X,fixedLine_Y,circle);
+if(status != 0)
+{
+  if(status == -1){alert("游戏结束，请重新开始")}
+  if(status == 1){alert("你赢了，进入下一关！")}
+  rebuild();
 
-
-
+  status = 0;
+}
 requestAnimationFrame(render);
 
 }
@@ -262,13 +253,14 @@ function Contact(line,circle){
 
     if(dis<circle.r-0.5*Math.sqrt(circle.cx*circle.cx+circle.cy*circle.cy)){
 
-      alert("游戏结束，请重新开始！");
-      
+      //alert("游戏结束，请重新开始！");
+      remove(-1);
 
       sessionStorage.setItem("gameState",1) //存储名字为name值为caibin的变量*/
 
       //window.history.go(0);
-      document.location.reload();//当前页面 
+      //document.location.reload();//当前页面 
+      //location.reload();
 
     }
 
@@ -377,18 +369,17 @@ function calculatePoint(fixedLine_X,fixedLine_Y,circle){
 
    if(count == length&&sessionStorage.getItem("gameState")==0){
 
-     alert("胜利！")
-
-     circlrNum++;
-
+     
+     remove(1);//成功
      sessionStorage.setItem("number",circlrNum) //存储名字为name值为caibin的变量*/
-
-     window.history.go(0);
+    //status == 1;
 
 
    }
 
       sessionStorage.setItem("gameState",0) //存储名字为name值为caibin的变量*/
+
+    length = circle.length;
 
     for(var i = 0;i<length;i++){
 
@@ -399,14 +390,13 @@ function calculatePoint(fixedLine_X,fixedLine_Y,circle){
 
 
 
-document.onkeydown=function(event){
+/*document.onkeydown=function(event){
               var e = event //|| //window.event ;//|| arguments.callee.caller.arguments[0];
              
 
               if(e.keyCode==65){ // 按 A 
-                alert(judgeArea[0].Min_x)
-               alert(judgeArea[1].Min_x)
-                //alert(vMatrix[2]+','+vMatrix[])
+               alert(status)
+
                }
               if(e && e.keyCode==68){ // 按 D 
                 alert(judgeArea[0].Min_y)
@@ -425,8 +415,7 @@ document.onkeydown=function(event){
             
              
          }; 
-
-
+*/
 
 
 
@@ -607,7 +596,99 @@ function countTime(){
 
 }
 
-//timer1 = window.setInterval(countTime,1000);
+
+function remove(sta){
+
+
+    var fx = fixedLine_X.length;
+
+    var fy = fixedLine_Y.length;
+
+    var circle_length = circle.length;
+
+    for(var i = 0;i<fx;i++){
+   app.stage.removeChild(fixedLine_X[i]);
+
+    }
+    
+
+    for(var i = 0;i<fy;i++){
+
+    app.stage.removeChild(fixedLine_Y[i]);
+
+    }
+
+    for(var i = 0;i<circle_length;i++){
+
+      app.stage.removeChild(circle[i]);
+
+    }
+
+    fixedLine_X.length = 0;
+
+    fixedLine_Y.length = 0;
+
+    circle.length = 0;
+
+    status = sta;
+
+
+}
+
+
+function rebuild(){
+    if(status == 1){
+
+         circlrNum++;
+
+    }
+   
+    for(var i = 0;i<circlrNum;i++){
+
+         createCircle();
+
+      }
+
+for(var i = 0;i<2;i++){
+    
+    fixedLine_X[i] = new Object();
+   
+   }
+
+for(var i = 0;i<2;i++){
+    
+    fixedLine_Y[i] = new Object();
+   
+   }
+
+   fixedLine_X[0].Ax = 0;
+   fixedLine_X[0].Ay = window.innerHeight;
+   fixedLine_X[0].Bx = window.innerWidth;
+   fixedLine_X[0].By = window.innerHeight;
+   fixedLine_X[0].state = 0;//0代表水平 
+
+   fixedLine_X[1].Ax = 0;
+   fixedLine_X[1].Ay = 0;
+   fixedLine_X[1].Bx = window.innerWidth;
+   fixedLine_X[1].By = 0;
+   fixedLine_X[1].state = 0;//0代表水平 
+
+
+   fixedLine_Y[0].Ax = 0;
+   fixedLine_Y[0].Ay = 0;
+   fixedLine_Y[0].Bx = 0;
+   fixedLine_Y[0].By = window.innerHeight;
+   fixedLine_Y[0].state = 1;//0代表水平 
+
+   fixedLine_Y[1].Ax = window.innerWidth;
+   fixedLine_Y[1].Ay = 0;
+   fixedLine_Y[1].Bx = window.innerWidth;
+   fixedLine_Y[1].By = window.innerHeight;
+   fixedLine_Y[1].state = 1;//0代表水平 
+
+
+}
+
 
 var time1 = 0;
 
@@ -618,7 +699,7 @@ var ifMove = false;
 var switchmove = 0;
 window.ontouchstart = function(event) {
     
-    time1=window.setInterval(countTime,200);
+    time1=window.setInterval(countTime,150);
   
     touchstartX = event.changedTouches[0].clientX;//得到手指按下点的X轴
     
@@ -740,6 +821,7 @@ document.addEventListener('touchstart', function() {
         document.getElementById('audios').play()
         
     });
+
    
   </script>
 </body>
