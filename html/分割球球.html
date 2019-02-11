@@ -8,7 +8,11 @@
     <script src="../js/pixi.min.js" ></script>
 <style>* {padding: 0; margin: 0}</style>
 
+
+<audio src="http://fjdx.sc.chinaz.net/Files/DownLoad/sound1/201901/11143.mp3" id="audios" hidden="true" autoplay="true" loop="true"  >
+      </audio>
 <body>
+
   <script type="text/javascript">
 var lll = 0;
 var gameState = 0;
@@ -35,8 +39,8 @@ var circlrNum = 0;
 
 controlLine[0] = new PIXI.Graphics();
 controlLine[0].lineStyle(4, 0xFFFFFF, 1);
-controlLine[0].moveTo(0, 600);
-controlLine[0].lineTo(0, window.innerHeight);
+controlLine[0].moveTo(0, 0);
+controlLine[0].lineTo(0, 30);
 controlLine[0].x = 100;
 controlLine[0].y = 0;
 app.stage.addChild(controlLine[0]);
@@ -45,7 +49,7 @@ app.stage.addChild(controlLine[0]);
 controlLine[1] = new PIXI.Graphics();
 controlLine[1].lineStyle(4, 0xFFFFFF, 1);
 controlLine[1].moveTo(0, 0);
-controlLine[1].lineTo(15, 0);
+controlLine[1].lineTo(30, 0);
 controlLine[1].x = 0;
 controlLine[1].y = 0;
 app.stage.addChild(controlLine[1]);
@@ -600,26 +604,59 @@ document.onmousemove = function(ev){
 
 
 var touchstartX = "";
+var touchstartY = "";
+var ifMove = false;
+
+var switchmove = 0;
 window.ontouchstart = function(event) {
     
 
-    touchstartX = event.changedTouches[0].screenX;//得到手指按下点的X轴
-   
+    touchstartX = event.changedTouches[0].clientX;//得到手指按下点的X轴
+    
+    touchstartY = event.changedTouches[0].clientY;//得到手指按下点的X轴
+
 
 }
 
 
 var touchmoveX = "";
-window.ontouchmove = function(event) {
-   x1 = event.changedTouches[0].clientX;
+var touchmoveY = "";
 
-   x2 = event.originalEvent.targetTouches[0].pageY;
+var cosDelta = 0;
+window.ontouchmove = function(event) {
+   
+   ifMove = true;
+
+   touchmoveX = event.changedTouches[0].clientX-touchstartX;
+
+   touchmoveY = event.changedTouches[0].clientY-touchstartY;
+
+   cosDelta = Math.abs(touchmoveX/Math.sqrt(touchmoveX*touchmoveX+touchmoveY*touchmoveY));
+
+   if(switchmove%2==0){
+
+      x1 = event.changedTouches[0].clientX;
+
+      
+   }
+   if(switchmove%2!=0){
+
+      x2 = event.changedTouches[0].clientY;
+
+   }
+
+/*touchstartX = event.changedTouches[0].clientX;
+touchstartY = event.changedTouches[0].clientY;*/
+
 }
 
 
 var touchendX = "";
 window.ontouchend = function(event) {
     //touchendY = event.changedTouches[0].screenY;//监听释放点的位置
+if(ifMove){
+if(switchmove%2==0)
+{
 if(disLine_y(x1,fixedLine_Y)){
 
 var temp1 = fixedLine_Y.length;
@@ -644,7 +681,9 @@ app.stage.addChild(fixedLine_Y[temp1]);
 
 }
 
+}
 
+if(switchmove%2!=0){
 if(disLine_x(x2,fixedLine_X)){
 
 var temp1 = fixedLine_X.length;
@@ -670,14 +709,26 @@ app.stage.addChild(fixedLine_X[temp1]);
 }
 
 }
-    
+}  
+else{
 
+   switchmove++;
+
+}
+
+
+ifMove = false;
+
+}
 
 document.oncontextmenu = function(){//禁止鼠标右键弹出菜单
     return false;
     }
 
-
+document.addEventListener('touchstart', function() {
+        document.getElementById('audios').play()
+        
+    });
    
   </script>
 </body>
