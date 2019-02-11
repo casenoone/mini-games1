@@ -14,7 +14,7 @@
 <body>
 
   <script type="text/javascript">
-var lll = 0;
+var time = 0;
 var gameState = 0;
 
 var pressMove = false;
@@ -601,7 +601,15 @@ document.onmousemove = function(ev){
 
 }
 
+function countTime(){
+    
+    time++;
 
+}
+
+//timer1 = window.setInterval(countTime,1000);
+
+var time1 = 0;
 
 var touchstartX = "";
 var touchstartY = "";
@@ -610,7 +618,8 @@ var ifMove = false;
 var switchmove = 0;
 window.ontouchstart = function(event) {
     
-
+    time1=window.setInterval(countTime,200);
+  
     touchstartX = event.changedTouches[0].clientX;//得到手指按下点的X轴
     
     touchstartY = event.changedTouches[0].clientY;//得到手指按下点的X轴
@@ -654,7 +663,8 @@ touchstartY = event.changedTouches[0].clientY;*/
 var touchendX = "";
 window.ontouchend = function(event) {
     //touchendY = event.changedTouches[0].screenY;//监听释放点的位置
-if(ifMove){
+window.clearInterval(time1)
+if(time>1){
 if(switchmove%2==0)
 {
 if(disLine_y(x1,fixedLine_Y)){
@@ -718,6 +728,7 @@ else{
 
 
 ifMove = false;
+time = 0;
 
 }
 
