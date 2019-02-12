@@ -213,15 +213,15 @@ function createCircle(){
    circle[length] = new PIXI.Graphics();
 
 
-   var radius = 16;//Math.random()*20+15;
-   circle[length].beginFill(0x9966FF*Math.random()*30);
+   var radius = 12;//Math.random()*20+15;
+   circle[length].beginFill(0x9966FF*Math.random()*100);
    circle[length].drawCircle(0, 0, radius);
    circle[length].endFill();
-   circle[length].x = Math.random()*500+50;
-   circle[length].y = Math.random()*500+50;
+   circle[length].x = Math.random()*400+50;
+   circle[length].y = Math.random()*400+50;
    circle[length].r = radius;
-   circle[length].cx = Math.random()*6+2;
-   circle[length].cy = Math.random()*6+2;
+   circle[length].cx = Math.random()*3+2;
+   circle[length].cy = Math.random()*3+2;
    circle[length].gameState = false;
    app.stage.addChild(circle[length]);
 
