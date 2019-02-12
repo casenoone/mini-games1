@@ -170,7 +170,28 @@ calculatePoint(fixedLine_X,fixedLine_Y,circle);
 if(status != 0)
 {
   if(status == -1){alert("游戏结束，请重新开始")}
-  if(status == 1){alert("你赢了，喜提第"+circlrNum+"关")}
+  if(status == 1){
+    
+    
+    if(circlrNum<10){
+
+        alert("你赢了，喜提第"+circlrNum+"关")
+
+    }
+
+    else if(circlrNum>=10&&circlrNum<=15){
+
+         alert("卧槽，大兄弟有点吊哇！喜提"+circlrNum+"关") 
+
+    }
+
+    else if(circlrNum>15){
+
+         alert("大兄弟，能闯到此关，非凡人啊！喜提"+circlrNum+"关") 
+
+    }
+
+  }
   rebuild();
 
   status = 0;
@@ -180,7 +201,6 @@ requestAnimationFrame(render);
 }
 
 render();
-
 app.renderer.view.style.position = "absolute";
 app.renderer.view.style.display = "block";
 app.renderer.autoResize = true;
@@ -194,7 +214,7 @@ function createCircle(){
 
 
    var radius = 16;//Math.random()*20+15;
-   circle[length].beginFill(0x9966FF*Math.random());
+   circle[length].beginFill(0x9966FF*Math.random()*30);
    circle[length].drawCircle(0, 0, radius);
    circle[length].endFill();
    circle[length].x = Math.random()*500+50;
@@ -213,7 +233,7 @@ function Sort_X(arr){
     var len = arr.length;
     for (var i = 0; i < len - 1; i++) {
         for (var j = 0; j < len - 1 - i; j++) {
-            if (arr[j].Ay > arr[j+1].Ay) {        // 相邻元素两两对比
+            if (arr[j].Ay > arr[j+1].Ay) {       
                 var temp = arr[j+1];        // 元素交换
                 arr[j+1] = arr[j];
                 arr[j] = temp;
@@ -822,6 +842,7 @@ document.addEventListener('touchstart', function() {
         document.getElementById('audios').play()
         
     });
+alert("游戏规则："+'\n'+"1.拖动屏幕移动屏幕边缘的游标，待到合适位置松开手指，我们的目标是将每一个球球分割成一个独立的空间"+'\n'+"2.单击屏幕切换分割线"+'\n'+"3.将横线（竖线）拖至屏幕边缘或者已有横线（竖线）上即可取消绘制"+'\n'+"4.黄线穿过或与小球太接近视为游戏失败"+'\n'+"5.我觉得你玩不过第15关(●ˇ∀ˇ●)"+'\n'+"6.如果发现单击屏幕无法切换横竖线，那一定是微信的锅，一下不行就点两下.")
 
    
   </script>
