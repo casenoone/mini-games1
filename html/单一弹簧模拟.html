@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head> 
+<meta charset="utf-8"> 
+<title>单一弹簧模拟</title> 
+</head>
+<body>
+
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
+</canvas>
+
+<script>
+
+var Vector2 = function ( x, y ) {
+
+	this.x = x || 0;
+	this.y = y || 0;
+
+};
+
+Vector2.prototype = {
+
+	sqrLength : function() { return this.x * this.x + this.y * this.y; },
+
+	length : function() { return Math.sqrt(this.x * this.x + this.y * this.y) },
+
+	cross : function(v) { return this.x * v.y - v.x * this.y },
+
+	add : function(v) { return new Vector2(this.x + v.x, this.y + v.y);},
+
+	subtract : function(v) { return new Vector2(this.x - v.x, this.y - v.y); },
+
+	multipuly : function(k) { return new Vector2(this.x * k, this.y * k) },
+
+	divide : function(k) { return new Vector2(this.x / k, this.y / k); }
+
+
+}
+
+function calculateDis(a, b) {//计算两点距离
+
+	return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+
+}
+
+var canvas = document.getElementById("myCanvas");
+
+var ctx = canvas.getContext("2d");
+    
+var w = canvas.attributes.width.value;
+var h = canvas.attributes.height.value;
+ctx.fillStyle = "rgb(0,0,0)";
+ctx.fillRect(0, 0, w, h);
+
+var GRAVITY = new Vector2(0.0, -9.8);
+var dampingCoefficient = 3.0;
+var timeIntervalInSeconds = 0.025; //刷新间隔
+
+var obj = function(mass, velocities) {
+
+	this.mass = mass;
+	this.forces = new Vector2(0, 0);
+	this.velocities = velocities;
+	this.acceleration = 0; //加速度
+	this.position = 0;
+
+}
+
+obj.prototype = {
+
+	init : function(spring) {
+
+		this.position = spring.objPosition;
+
+	},
+
+	updateObj : function(spring, timeIntervalInSeconds) {
+
+		//计算重力
+		this.forces = GRAVITY.multipuly(this.mass);
+
+		//计算弹力
+		var r = spring.objPosition.subtract(spring.position);
+		
+		var distance = r.length();
+
+		var temp_force = r.multipuly(-1 * spring.stiffness * (distance - spring.restLength));
+
+		this.forces = this.forces.add(temp_force);
+
+		//计算衰减力
+		var damping = this.velocities.multipuly(-1 * dampingCoefficient);
+		this.forces = this.forces.add(damping);
+
+		this.acceleration = this.forces.divide(this.mass);
+		
+		this.velocities = this.velocities.add(this.acceleration.multipuly(timeIntervalInSeconds));
+		
+
+		this.position = this.position.add(this.velocities.multipuly(timeIntervalInSeconds));
+
+	},
+
+}
+
+var Spring = function(restLength, all_length, one_length,  stiffness, position, cut_count) {
+	
+	this.all_length = all_length; //弹簧总长度
+	this.one_length = one_length; //弹簧每一圈的长度
+	this.stiffness = stiffness; //弹簧系数
+	this.position = position; //弹簧位置
+	this.xdis = 0;
+	this.cut_count = cut_count;
+	this.temp_height = 0;
+	this.objPosition = 0;
+	this.restLength = restLength;//弹簧不拉伸或压缩时的长度
+}
+
+Spring.prototype = {
+	
+	initSpring : function() {
+
+		this.temp_height = this.all_length / this.cut_count;
+		this.xdis = Math.sqrt(this.one_length * this.one_length - (this.temp_height * this.temp_height));
+
+
+	},
+
+	drawSpring : function() {
+
+		var x0 = this.position.x;
+		var y0 = this.position.y; 
+
+		var x1 = 0;
+		var y1 = 0;
+
+		for(var i = 0; i < this.cut_count; i++) {
+
+			if(i %  2 == 0) {
+
+				x1 = x0 - this.xdis;
+
+			}
+
+			else {
+
+				x1 = x0 + this.xdis;
+
+			}
+
+			y1 = y0 + this.temp_height;
+
+			drawLine(x0, y0, x1, y1);
+
+			x0 = x1;
+			y0 = y1;
+
+		}
+
+		this.objPosition = new Vector2(this.position.x, y0);
+
+
+	},
+
+	updateSpring : function(cubeObj) {
+
+		this.all_length = calculateDis(cubeObj.position, this.position);
+	},
+}
+
+
+function render() {
+	
+	ctx.fillStyle = "rgb(0,0,0)";
+	ctx.fillRect(0, 0, w, h);
+	clearBlack(); 
+
+	mySpring.initSpring();
+	mySpring.drawSpring();
+	ctx.fillStyle = "#FF0000";
+	ctx.fillRect(mySpring.objPosition.x-50, mySpring.objPosition.y, 50, 50); 
+	
+	cubeObj.init(mySpring);
+	cubeObj.updateObj(mySpring, timeIntervalInSeconds); //算出下一时步物体所在位置
+	mySpring.updateSpring(cubeObj);
+
+	requestAnimationFrame(render);
+
+}
+
+function clearBlack() {
+
+	ctx.fillStyle = "#000000";  
+    ctx.beginPath();  
+    ctx.fillRect(0, 0, 500, 500);  
+    ctx.closePath(); 
+
+}
+
+
+function drawLine(x0, y0, x1, y1) {
+
+    ctx.moveTo(x0, y0);       //设置起点状态
+	ctx.lineTo(x1, y1);       //设置末端状态
+	ctx.lineWidth = 0.3;          //设置线宽状态
+	ctx.strokeStyle = '#00FF00';  //设置线的颜色状态
+	ctx.stroke();              //进行绘制
+
+}
+
+
+var mySpring = new Spring(100, 200, 50,  0.3, new Vector2(100, 0), 12);
+var cubeObj = new obj(1.0, new Vector2(0, -3));
+
+
+render();
+
+</script>
+
+</body>
+</html>
