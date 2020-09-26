@@ -53,8 +53,9 @@ ctx.fillStyle = "rgb(0,0,0)";
 ctx.fillRect(0, 0, w, h);
 
 var GRAVITY = new Vector2(0.0, -9.8);
-var dampingCoefficient = 3.0;
+//var dampingCoefficient = 3.0;
 var timeIntervalInSeconds = 0.025; //刷新间隔
+var dampingCoefficient = 0.8;
 
 var obj = function(mass, velocities) {
 
@@ -209,9 +210,12 @@ function drawLine(x0, y0, x1, y1) {
 }
 
 
-var mySpring = new Spring(100, 200, 50,  0.3, new Vector2(100, 0), 12);
-var cubeObj = new obj(1.0, new Vector2(0, -3));
+/*var mySpring = new Spring(100, 200, 50,  0.3, new Vector2(100, 0), 12);
+var cubeObj = new obj(1, new Vector2(0, -3));*/
 
+
+var mySpring = new Spring(300, 400, 50,  0.5, new Vector2(100, 0), 15);
+var cubeObj = new obj(1, new Vector2(0, -3));
 
 render();
 
